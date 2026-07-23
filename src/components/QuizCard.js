@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './QuizCard.css';
 
-function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, currentScore }) {
+function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, onPrev, onEnd, currentScore, canGoBack }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -10,7 +10,6 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
 
   const accuracyRate = questionNumber > 1 ? Math.round((currentScore / (questionNumber - 1)) * 100) : 0;
 
-  // 解答後に解説部分へ自動スクロール
   useEffect(() => {
     if (showExplanation && explanationRef.current) {
       setTimeout(() => {
@@ -38,6 +37,12 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
     onNext();
   };
 
+  const handleEnd = () => {
+    if (window.confirm('クイズを終了しますか？現在の結果が表示されます。')) {
+      onEnd();
+    }
+  };
+
   const toggleHint = () => {
     setShowHint(!showHint);
   };
@@ -60,6 +65,22 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
     <div className="quiz-card">
       <div className="quiz-header">
         <div className="progress-info">
+          <div className="nav-buttons">
+            <button 
+              className="nav-button prev" 
+              onClick={onPrev}
+              disabled={!canGoBack}
+            >
+              ← 前の問題
+            </button>
+            <button 
+              className="nav-button next" 
+              onClick={onNext}
+              disabled={questionNumber >= totalQuestions}
+            >
+              次の問題 →
+            </button>
+          </div>
           <div className="question-number">
             問題 {questionNumber} / {totalQuestions}
           </div>
@@ -81,11 +102,16 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
           </div>
         )}
 
-        <div className="badges">
-          <div className="category-badge">{question.category}</div>
-          {question.subcategory && (
-            <div className="subcategory-badge">{question.subcategory}</div>
-          )}
+        <div className="header-actions">
+          <div className="badges">
+            <div className="category-badge">{question.category}</div>
+            {question.subcategory && (
+              <div className="subcategory-badge">{question.subcategory}</div>
+            )}
+          </div>
+          <button className="end-quiz-button" onClick={handleEnd}>
+            終わる
+          </button>
         </div>
       </div>
 

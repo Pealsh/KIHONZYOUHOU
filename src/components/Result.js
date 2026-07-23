@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Result.css';
 
 function Result({ score, totalQuestions, answeredQuestions, onRestart }) {
-  const percentage = Math.round((score / totalQuestions) * 100);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  
+  const actualTotal = answeredQuestions.length;
+  const percentage = actualTotal > 0 ? Math.round((score / actualTotal) * 100) : 0;
   
   const getGrade = () => {
     if (percentage >= 90) return { text: 'S', color: '#ffd700', message: '素晴らしい！' };
@@ -13,6 +16,14 @@ function Result({ score, totalQuestions, answeredQuestions, onRestart }) {
   };
 
   const grade = getGrade();
+
+  const handleQuestionClick = (index) => {
+    if (selectedQuestion === index) {
+      setSelectedQuestion(null);
+    } else {
+      setSelectedQuestion(index);
+    }
+  };
 
   return (
     <div className="result-container">
@@ -27,10 +38,15 @@ function Result({ score, totalQuestions, answeredQuestions, onRestart }) {
           </div>
           <div className="score-info">
             <div className="score-number">
-              {score} / {totalQuestions}
+              {score} / {actualTotal}
             </div>
             <div className="score-percentage">{percentage}%</div>
             <div className="grade-message">{grade.message}</div>
+            {actualTotal < totalQuestions && (
+              <div className="partial-info">
+                ({totalQuestions}問中{actualTotal}問解答)
+              </div>
+            )}
           </div>
         </div>
 
@@ -41,7 +57,7 @@ function Result({ score, totalQuestions, answeredQuestions, onRestart }) {
           </div>
           <div className="stat-item">
             <div className="stat-label">不正解数</div>
-            <div className="stat-value incorrect">{totalQuestions - score}</div>
+            <div className="stat-value incorrect">{actualTotal - score}</div>
           </div>
           <div className="stat-item">
             <div className="stat-label">正答率</div>
@@ -49,41 +65,67 @@ function Result({ score, totalQuestions, answeredQuestions, onRestart }) {
           </div>
         </div>
 
-        <div className="review-section">
-          <h3>復習</h3>
-          <div className="review-list">
+        <div className="question-grid-section">
+          <h3>解答一覧</h3>
+          <p className="grid-instruction">問題をクリックすると詳細を表示</p>
+          <div className="question-grid">
             {answeredQuestions.map((item, index) => (
-              <div 
-                key={index} 
-                className={`review-item ${item.isCorrect ? 'correct' : 'incorrect'}`}
+              <button
+                key={index}
+                className={`question-cell ${item.isCorrect ? 'correct' : 'incorrect'} ${selectedQuestion === index ? 'selected' : ''}`}
+                onClick={() => handleQuestionClick(index)}
               >
-                <div className="review-header">
-                  <span className="review-number">問題 {index + 1}</span>
-                  <span className={`review-badge ${item.isCorrect ? 'correct' : 'incorrect'}`}>
-                    {item.isCorrect ? '正解' : '不正解'}
-                  </span>
-                </div>
-                <div className="review-question">{item.question.question}</div>
-                <div className="review-answers">
-                  <div className="review-answer">
-                    <span className="answer-label">あなたの回答:</span>
-                    <span className={item.isCorrect ? 'correct-text' : 'incorrect-text'}>
-                      {item.question.choices[item.selectedAnswer]}
-                    </span>
-                  </div>
-                  {!item.isCorrect && (
-                    <div className="review-answer">
-                      <span className="answer-label">正解:</span>
-                      <span className="correct-text">
-                        {item.question.choices[item.question.correctAnswer]}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                <span className="cell-number">{index + 1}</span>
+                <span className="cell-mark">{item.isCorrect ? '○' : '×'}</span>
+              </button>
             ))}
           </div>
         </div>
+
+        {selectedQuestion !== null && (
+          <div className="detail-section">
+            <div className="detail-card">
+              <div className="detail-header">
+                <span className="detail-number">問題 {selectedQuestion + 1}</span>
+                <span className={`detail-badge ${answeredQuestions[selectedQuestion].isCorrect ? 'correct' : 'incorrect'}`}>
+                  {answeredQuestions[selectedQuestion].isCorrect ? '○ 正解' : '× 不正解'}
+                </span>
+                <button className="detail-close" onClick={() => setSelectedQuestion(null)}>✕</button>
+              </div>
+              
+              <div className="detail-question">
+                {answeredQuestions[selectedQuestion].question.question}
+              </div>
+              
+              <div className="detail-answers">
+                <div className="detail-answer">
+                  <span className="detail-label">あなたの回答:</span>
+                  <span className={answeredQuestions[selectedQuestion].isCorrect ? 'correct-text' : 'incorrect-text'}>
+                    {String.fromCharCode(65 + answeredQuestions[selectedQuestion].selectedAnswer)}. {answeredQuestions[selectedQuestion].question.choices[answeredQuestions[selectedQuestion].selectedAnswer]}
+                  </span>
+                </div>
+                
+                {!answeredQuestions[selectedQuestion].isCorrect && (
+                  <div className="detail-answer">
+                    <span className="detail-label">正解:</span>
+                    <span className="correct-text">
+                      {String.fromCharCode(65 + answeredQuestions[selectedQuestion].question.correctAnswer)}. {answeredQuestions[selectedQuestion].question.choices[answeredQuestions[selectedQuestion].question.correctAnswer]}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="detail-explanation">
+                <h4>解説</h4>
+                <div className="explanation-text">
+                  {answeredQuestions[selectedQuestion].question.explanation.split('\n').map((line, idx) => (
+                    <p key={idx}>{line}</p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <button className="restart-button" onClick={onRestart}>
           もう一度挑戦する

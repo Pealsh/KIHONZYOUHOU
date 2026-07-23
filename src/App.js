@@ -133,6 +133,18 @@ function App() {
     }
   };
 
+  // 前の問題へ
+  const prevQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
+
+  // クイズを途中で終了
+  const endQuiz = () => {
+    setQuizFinished(true);
+  };
+
   // クイズをリセット
   const resetQuiz = () => {
     setQuizStarted(false);
@@ -172,7 +184,10 @@ function App() {
             totalQuestions={filteredQuestions.length}
             onAnswer={handleAnswer}
             onNext={nextQuestion}
+            onPrev={prevQuestion}
+            onEnd={endQuiz}
             currentScore={score}
+            canGoBack={currentQuestionIndex > 0}
           />
         )}
       </main>

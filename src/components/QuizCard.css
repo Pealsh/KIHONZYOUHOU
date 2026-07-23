@@ -23,6 +23,54 @@
   margin-bottom: 1rem;
 }
 
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.nav-button {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nav-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-button.prev {
+  border-color: rgba(150, 150, 200, 0.4);
+}
+
+.nav-button.prev:hover:not(:disabled) {
+  background: rgba(150, 150, 200, 0.15);
+  border-color: rgba(150, 150, 200, 0.6);
+}
+
+.nav-button.next {
+  border-color: rgba(100, 200, 255, 0.4);
+}
+
+.nav-button.next:hover:not(:disabled) {
+  background: rgba(100, 200, 255, 0.15);
+  border-color: rgba(100, 200, 255, 0.6);
+}
+
 .question-number {
   font-size: 1.1rem;
   font-weight: 600;
@@ -72,10 +120,35 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .badges {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+}
+
+.end-quiz-button {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(255, 100, 100, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 100, 100, 0.1);
+  color: rgba(255, 100, 100, 1);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.end-quiz-button:hover {
+  background: rgba(255, 100, 100, 0.2);
+  border-color: rgba(255, 100, 100, 0.6);
 }
 
 .category-badge {
