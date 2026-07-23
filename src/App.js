@@ -25,13 +25,16 @@ function App() {
   const [allQuestions, setAllQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  // eslint-disable-next-line no-unused-vars
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [score, setScore] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
   const [wrongQuestions, setWrongQuestions] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [isRandomMode, setIsRandomMode] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [isWrongOnlyMode, setIsWrongOnlyMode] = useState(false);
 
   // 問題データを読み込み
