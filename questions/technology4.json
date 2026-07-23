@@ -142,30 +142,30 @@
   {
     "id": "tech_101",
     "category": "テクノロジー",
-    "question": "CSSの擬似クラスで、マウスカーソルが要素上にあるときに適用されるものはどれか。",
+    "question": "2つの装置を直列に接続したシステムの稼働率が0.81のとき、各装置の稼働率は同じとすると、1台あたりの稼働率はいくらか。",
     "choices": [
-      ":hover",
-      ":active",
-      ":focus",
-      ":visited"
+      "0.9",
+      "0.81",
+      "0.405",
+      "0.99"
     ],
     "correctAnswer": 0,
-    "explanation": ":hoverは、マウスカーソルが要素上にある状態（ホバー状態）を表す擬似クラスです。マウスオーバー時のスタイル変更に使用されます。\n\n【主な擬似クラス】\n・:hover：マウスカーソルが上にある\n・:active：クリック中\n・:focus：フォーカスがある\n・:visited：訪問済みリンク\n・:first-child：最初の子要素\n・:nth-child(n)：n番目の子要素",
-    "hint": "「ホバー」はマウスを重ねることを意味します。"
+    "explanation": "直列システムの稼働率は、各装置の稼働率の積です。\n全体の稼働率 = R × R = R² = 0.81\nR = √0.81 = 0.9\n\n【システムの稼働率】\n・直列：R1 × R2（両方稼働で全体稼働）\n・並列：1 - (1-R1)(1-R2)（どちらか稼働で全体稼働）\n\n【稼働率の計算】\n稼働率 = MTBF / (MTBF + MTTR)",
+    "hint": "直列システムは掛け算です。全体稼働率0.81の平方根を求めます。"
   },
   {
     "id": "tech_102",
     "category": "テクノロジー",
-    "question": "JavaScriptで非同期処理を扱うための仕組みはどれか。",
+    "question": "公開鍵暗号方式の説明として正しいものはどれか。",
     "choices": [
-      "Promise",
-      "Loop",
-      "Thread",
-      "Mutex"
+      "暗号化と復号で異なる鍵を使用する",
+      "暗号化と復号で同じ鍵を使用する",
+      "鍵を使用せずにデータを暗号化する",
+      "暗号化にのみ鍵を使用し、復号には鍵を使用しない"
     ],
     "correctAnswer": 0,
-    "explanation": "Promiseは、JavaScriptで非同期処理の結果を表すオブジェクトです。処理の成功(resolve)または失敗(reject)を扱え、.then()や.catch()でチェーン可能です。\n\n【JavaScriptの非同期処理】\n・Promise：非同期処理の抽象化\n・async/await：Promiseをより読みやすく\n・コールバック：古い非同期パターン\n・setTimeout/setInterval：タイマー",
-    "hint": "「約束（Promise）」が将来果たされるイメージです。"
+    "explanation": "公開鍵暗号方式（非対称鍵暗号）は、暗号化に使う鍵（公開鍵）と復号に使う鍵（秘密鍵）が異なります。公開鍵は誰にでも公開でき、秘密鍵は本人だけが持ちます。\n\n【暗号方式の種類】\n・共通鍵暗号：暗号化と復号に同じ鍵（AES、DES）\n・公開鍵暗号：異なる鍵ペア（RSA、楕円曲線暗号）\n\n【公開鍵暗号の用途】\n・データ暗号化\n・デジタル署名\n・鍵交換",
+    "hint": "「公開鍵」で暗号化し、「秘密鍵」で復号します。"
   },
   {
     "id": "tech_103",
@@ -254,16 +254,16 @@
   {
     "id": "tech_109",
     "category": "テクノロジー",
-    "question": "Pythonでリストの要素を逆順にするメソッドはどれか。",
+    "question": "SQLでテーブルから条件に合致するレコードを抽出するために使用する句はどれか。",
     "choices": [
-      "reverse()",
-      "sort()",
-      "flip()",
-      "invert()"
+      "WHERE",
+      "ORDER BY",
+      "GROUP BY",
+      "HAVING"
     ],
     "correctAnswer": 0,
-    "explanation": "Pythonのリストには、reverse()メソッドがあり、リストの要素を逆順に並べ替えます（破壊的メソッド）。\n\n【Pythonのリスト操作】\n・reverse()：逆順にする（破壊的）\n・sort()：ソートする（破壊的）\n・reversed()：逆順のイテレータを返す（非破壊的）\n・sorted()：ソートした新しいリストを返す（非破壊的）\n\n例：\nlist.reverse()  # 元のリストを変更\nreversed(list)  # 新しいイテレータを返す",
-    "hint": "「reverse」は「逆にする」という意味です。"
+    "explanation": "WHERE句は、テーブルから条件に合致するレコードを抽出するために使用します。SELECT文やUPDATE文、DELETE文で使用できます。\n\n【SQL句の役割】\n・WHERE：行の抽出条件\n・ORDER BY：結果の並べ替え\n・GROUP BY：グループ化\n・HAVING：グループ化後の条件\n\n【例】\nSELECT * FROM 社員\nWHERE 部署 = '営業';",
+    "hint": "「WHERE（どこ）」で「どの条件のデータを取得するか」を指定します。"
   },
   {
     "id": "tech_110",
