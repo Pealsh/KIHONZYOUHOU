@@ -51,12 +51,142 @@ function PriorityBlock({ stars, title, desc, topicStats, onStartTopic, onStartMi
   );
 }
 
-function CategorySelect({ onStartQuiz, onStartTopic, onStartPriorityMix, topicStats, wrongQuestionsCount }) {
+function CategorySelect({
+  onStartQuiz,
+  onStartTopic,
+  onStartPriorityMix,
+  categoryStats,
+  topicStats,
+  wrongQuestionsCount,
+}) {
+  const categories = [
+    { id: 'all', name: 'すべて', icon: '📚' },
+    { id: 'テクノロジー', name: 'テクノロジー', icon: '💻' },
+    { id: 'マネジメント', name: 'マネジメント', icon: '📊' },
+    { id: 'ストラテジー', name: 'ストラテジー', icon: '🎯' },
+  ];
+
   return (
     <div className="category-select">
       <div className="category-select-content">
-        <h2>効率学習メニュー</h2>
-        <p className="subtitle">優先度の高い単元から集中して解けます</p>
+        <h2>学習モードを選択</h2>
+        <p className="subtitle">基本情報技術者試験の問題を学習できます</p>
+
+        {/* ランダム出題 */}
+        <div className="mode-section featured">
+          <h3>🎲 おすすめ：ランダム出題</h3>
+          <div className="special-modes">
+            <button
+              className="special-button random-button featured"
+              onClick={() => onStartQuiz('all', true, false)}
+            >
+              <div className="special-icon">🔀</div>
+              <div className="special-text">
+                <div className="special-name">ランダム全問題</div>
+                <div className="special-desc">全カテゴリーからランダムに出題 - 実戦形式</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* 計算問題集 */}
+        <div className="mode-section calculation-section">
+          <h3>💯 計算問題集（毎回異なる数値）</h3>
+          <div className="special-modes">
+            <button
+              className="special-button calculation-button featured"
+              onClick={() => onStartQuiz('calculation', false, false, true, false)}
+            >
+              <div className="special-icon">🧮</div>
+              <div className="special-text">
+                <div className="special-name">ランダム計算問題 100問</div>
+                <div className="special-desc">基数変換・論理演算・確率統計・性能計算など - メモ機能付き</div>
+              </div>
+            </button>
+          </div>
+          <div className="calculation-topics">
+            <span className="topic-tag">基数変換</span>
+            <span className="topic-tag">補数表現</span>
+            <span className="topic-tag">論理演算</span>
+            <span className="topic-tag">シフト演算</span>
+            <span className="topic-tag">順列・組合せ</span>
+            <span className="topic-tag">期待値</span>
+            <span className="topic-tag">平均・中央値</span>
+            <span className="topic-tag">MIPS計算</span>
+            <span className="topic-tag">稼働率</span>
+          </div>
+        </div>
+
+        {/* 科目B */}
+        <div className="mode-section subjectb-section">
+          <h3>🧩 科目B（アルゴリズム・セキュリティ）</h3>
+          <div className="special-modes">
+            <button
+              className="special-button subjectb-button featured"
+              onClick={() => onStartQuiz('subjectB', false, false, false, true)}
+            >
+              <div className="special-icon">💻</div>
+              <div className="special-text">
+                <div className="special-name">科目B ランダム 20問</div>
+                <div className="special-desc">擬似言語トレース・データ構造・整列探索・セキュリティ - メモ機能付き</div>
+              </div>
+            </button>
+          </div>
+          <div className="subjectb-topics">
+            <span className="topic-tag-b">配列・ループ</span>
+            <span className="topic-tag-b">スタック・キュー</span>
+            <span className="topic-tag-b">探索・整列</span>
+            <span className="topic-tag-b">再帰・計算量</span>
+            <span className="topic-tag-b">情報セキュリティ</span>
+          </div>
+        </div>
+
+        {/* カテゴリー別 */}
+        <div className="mode-section">
+          <h3>📖 カテゴリー別学習</h3>
+          <div className="category-grid">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className="category-button"
+                onClick={() => onStartQuiz(category.id, false, false)}
+              >
+                <div className="category-icon">{category.icon}</div>
+                <div className="category-name">{category.name}</div>
+                <div className="category-count">
+                  {categoryStats[category.id] || 0}問
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 復習 */}
+        {wrongQuestionsCount > 0 && (
+          <div className="mode-section">
+            <h3>❌ 復習モード</h3>
+            <div className="special-modes">
+              <button
+                className="special-button wrong-button"
+                onClick={() => onStartQuiz('all', false, true)}
+              >
+                <div className="special-icon">📝</div>
+                <div className="special-text">
+                  <div className="special-name">間違えた問題のみ</div>
+                  <div className="special-desc">{wrongQuestionsCount}問の復習</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 優先度別（下に追加） */}
+        <div className="mode-section priority-intro">
+          <h3>⭐ 優先度別学習</h3>
+          <p className="priority-intro-desc">
+            得点効率の高い単元から集中して解けます
+          </p>
+        </div>
 
         <PriorityBlock
           stars={5}
@@ -85,42 +215,13 @@ function CategorySelect({ onStartQuiz, onStartTopic, onStartPriorityMix, topicSt
           onStartMix={() => onStartPriorityMix(3)}
         />
 
-        <div className="mode-section other-modes">
-          <h3>その他</h3>
-          <div className="special-modes stacked">
-            <button
-              className="special-button random-button"
-              onClick={() => onStartQuiz('all', true, false)}
-            >
-              <div className="special-icon">🔀</div>
-              <div className="special-text">
-                <div className="special-name">ランダム全問題</div>
-                <div className="special-desc">全カテゴリーから実戦形式</div>
-              </div>
-            </button>
-
-            {wrongQuestionsCount > 0 && (
-              <button
-                className="special-button wrong-button"
-                onClick={() => onStartQuiz('all', false, true)}
-              >
-                <div className="special-icon">📝</div>
-                <div className="special-text">
-                  <div className="special-name">間違えた問題のみ</div>
-                  <div className="special-desc">{wrongQuestionsCount}問の復習</div>
-                </div>
-              </button>
-            )}
-          </div>
-        </div>
-
         <div className="info-section">
-          <h3>💡 使い方</h3>
+          <h3>💡 このアプリについて</h3>
           <ul>
-            <li>★★★★★ から順にトピック単位で解くのが効率的です</li>
-            <li>「まとめて」で同じ優先度を一気に演習できます</li>
-            <li>計算・アルゴリズムは毎回違う問題が生成されます</li>
-            <li>途中で「終わる」を押すと、その時点の結果を確認できます</li>
+            <li>リアルタイムで正答率を確認できます</li>
+            <li>間違えた問題を自動で記録し、復習できます</li>
+            <li>計算・科目Bは毎回違う問題が生成されます</li>
+            <li>優先度別で効率よく単元を絞って学習できます</li>
           </ul>
         </div>
       </div>

@@ -179,12 +179,16 @@ function CalculationQuizCard({
               <button className="hint-button" onClick={toggleHint}>
                 {showHint ? '💡 ヒントを閉じる' : '💡 ヒントを見る'}
               </button>
-              {showHint && (
-                <div className="hint-content">
-                  <div className="hint-icon">💡</div>
-                  <p>{question.hint}</p>
+            {showHint && (
+              <div className="hint-content">
+                <div className="hint-icon">💡</div>
+                <div className="hint-text">
+                  {question.hint.split('\n').map((line, index) => (
+                    <p key={index}>{line || '\u00A0'}</p>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
             </div>
           )}
 

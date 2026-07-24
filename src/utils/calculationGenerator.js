@@ -129,8 +129,8 @@ function generate10to2() {
     question: `10進数の ${decimal} を2進数で表すとどれか。`,
     choices,
     correctAnswer,
-    hint: '2で割り続けて余りを下から読む方法で計算できます。',
-    explanation: `10進数 ${decimal} を2進数に変換:\n\n計算過程:\n${generateDivisionSteps(decimal, 2)}\n\n答え: ${binary}`
+    hint: `【計算方法】割り算の余り法\n① ${decimal} を2で割り続ける\n② 余り（0か1）を記録\n③ 余りを下から上へ並べると2進数になる`,
+    explanation: `【計算方法】10進数 → 2進数（割り算の余り法）\n\n公式イメージ: 2で割った余りを下から読む\n\n手順:\n${generateDivisionSteps(decimal, 2)}\n\n答え: ${binary}`
   };
 }
 
@@ -161,8 +161,8 @@ function generate2to10() {
     question: `2進数の ${binary} を10進数で表すとどれか。`,
     choices,
     correctAnswer,
-    hint: '各桁の位置に応じた2のべき乗を掛けて合計します。',
-    explanation: `2進数 ${binary} を10進数に変換:\n\n${generateBinaryToDecimalSteps(binary)}\n\n答え: ${decimal}`
+    hint: `【計算方法】位取り記数法\n各桁の値 × 2^(桁の位置) をすべて足す\n右端が 2^0、その左が 2^1、2^2 ...`,
+    explanation: `【計算方法】2進数 → 10進数（位取り展開）\n\n公式: Σ (各桁のビット × 2^桁位置)\n\n手順:\n${generateBinaryToDecimalSteps(binary)}\n\n答え: ${decimal}`
   };
 }
 
@@ -190,8 +190,8 @@ function generate16to10() {
     question: `16進数の ${hex} を10進数で表すとどれか。`,
     choices,
     correctAnswer,
-    hint: '16進数は0-9とA-Fを使います。各桁に16のべき乗を掛けます。',
-    explanation: `16進数 ${hex} を10進数に変換:\n\n${generateHexToDecimalSteps(hex)}\n\n答え: ${decimal}`
+    hint: `【計算方法】位取り記数法\nA=10,B=11,C=12,D=13,E=14,F=15 に直してから\n各桁 × 16^(桁位置) を合計する`,
+    explanation: `【計算方法】16進数 → 10進数（位取り展開）\n\n対応: A=10 B=11 C=12 D=13 E=14 F=15\n公式: Σ (各桁の値 × 16^桁位置)\n\n手順:\n${generateHexToDecimalSteps(hex)}\n\n答え: ${decimal}`
   };
 }
 
@@ -220,8 +220,8 @@ function generateTwoComplement() {
     question: `8ビットの2の補数表現で、-${positive} を表すビット列はどれか。`,
     choices,
     correctAnswer,
-    hint: '2の補数は、元の数をビット反転して1を加えます。',
-    explanation: `8ビットで -${positive} の2の補数:\n\n1. ${positive}の2進数: ${binary}\n2. ビット反転: ${inverted}\n3. 1を加える: ${complementBinary}\n\n答え: ${complementBinary}`
+    hint: `【計算方法】2の補数\n① 絶対値 ${positive} を8ビット2進数にする\n② 0↔1 でビット反転\n③ 反転結果に +1 する`,
+    explanation: `【計算方法】負の数の2の補数表現（8ビット）\n\n手順:\n1. 正の数 ${positive} を2進数にする\n   → ${binary}\n   （計算: ${generateDivisionSteps(positive, 2).split('\n\n')[0]}）\n\n2. ビット反転（0→1、1→0）\n   ${binary}\n   ↓\n   ${inverted}\n\n3. +1 する\n   ${inverted} + 1 = ${complementBinary}\n\n答え: ${complementBinary}`
   };
 }
 
@@ -255,8 +255,8 @@ function generateLogicalAND() {
     question: `次の2つの8ビット2進数の論理積（AND）を求めよ。\nA: ${aBin}\nB: ${bBin}`,
     choices,
     correctAnswer,
-    hint: '論理積は両方が1のときだけ1になります。',
-    explanation: `論理積（AND）演算:\n\nA: ${aBin}\nB: ${bBin}\n結果: ${resultBin}\n\n10進数: ${result}\n\n各ビットで両方が1のときのみ1になります。`
+    hint: `【計算方法】論理積 AND\n同じ桁を見て「両方とも1 → 1、それ以外 → 0」\n右端から1ビットずつ比較する`,
+    explanation: `${generateBitwiseSteps(aBin, bBin, resultBin, 'AND: 1∧1=1 / それ以外=0', '両方1のときだけ1')}\n\n10進数でも確認: ${a} AND ${b} = ${result}\n\n答え: ${resultBin} (${result})`
   };
 }
 
@@ -286,8 +286,8 @@ function generateLogicalOR() {
     question: `次の2つの8ビット2進数の論理和（OR）を求めよ。\nA: ${aBin}\nB: ${bBin}`,
     choices,
     correctAnswer,
-    hint: '論理和はどちらか一方でも1なら1になります。',
-    explanation: `論理和（OR）演算:\n\nA: ${aBin}\nB: ${bBin}\n結果: ${resultBin}\n\n10進数: ${result}`
+    hint: `【計算方法】論理和 OR\n同じ桁を見て「どちらかが1 → 1、両方0 → 0」\n右端から1ビットずつ比較する`,
+    explanation: `${generateBitwiseSteps(aBin, bBin, resultBin, 'OR: 0∨0=0 / それ以外=1', 'どちらかが1なら1')}\n\n10進数でも確認: ${a} OR ${b} = ${result}\n\n答え: ${resultBin} (${result})`
   };
 }
 
@@ -317,8 +317,8 @@ function generateLogicalXOR() {
     question: `次の2つの8ビット2進数の排他的論理和（XOR）を求めよ。\nA: ${aBin}\nB: ${bBin}`,
     choices,
     correctAnswer,
-    hint: 'XORは2つのビットが異なるときだけ1になります。',
-    explanation: `排他的論理和（XOR）演算:\n\nA: ${aBin}\nB: ${bBin}\n結果: ${resultBin}\n\n10進数: ${result}\n\n異なるビットの位置で1になります。`
+    hint: `【計算方法】排他的論理和 XOR\n同じ桁を見て「違う → 1、同じ → 0」\n右端から1ビットずつ比較する`,
+    explanation: `${generateBitwiseSteps(aBin, bBin, resultBin, 'XOR: 同じ=0 / 異なる=1', 'ビットが異なるときだけ1')}\n\n10進数でも確認: ${a} XOR ${b} = ${result}\n\n答え: ${resultBin} (${result})`
   };
 }
 
@@ -351,8 +351,8 @@ function generateLogicalLeftShift() {
     question: `8ビットの値 ${valueBin} を論理左シフト${shift}ビット行った結果はどれか。`,
     choices,
     correctAnswer,
-    hint: '左シフトは2倍を繰り返す操作です。右側に0が入ります。',
-    explanation: `論理左シフト${shift}ビット:\n\n元の値: ${valueBin} (${value})\n結果: ${resultBin} (${result})\n\n左に${shift}ビットシフトし、右側に0を詰めます。\n${value} × 2^${shift} = ${value * (2 ** shift)} → 8ビットで ${result}`
+    hint: `【計算方法】論理左シフト ${shift} ビット\n① ビット列を左に ${shift} つずらす\n② 右端に 0 を ${shift} 個入れる\n③ または 元の値 × 2^${shift}（8ビットに収める）`,
+    explanation: `【計算方法】論理左シフト ${shift} ビット\n\n公式: 結果 ≒ 元の値 × 2^シフト数（はみ出しは捨てる）\n\n手順:\n1. 元の値: ${valueBin} (${value})\n2. 左へ ${shift} ビット移動し、右に0を詰める\n3. 計算: ${value} × 2^${shift} = ${value} × ${2 ** shift} = ${value * (2 ** shift)}\n4. 8ビットにマスク → ${result} = ${resultBin}\n\n答え: ${resultBin} (${result})`
   };
 }
 
@@ -381,8 +381,8 @@ function generateLogicalRightShift() {
     question: `8ビットの値 ${valueBin} を論理右シフト${shift}ビット行った結果はどれか。`,
     choices,
     correctAnswer,
-    hint: '右シフトは2で割る操作です。左側に0が入ります。',
-    explanation: `論理右シフト${shift}ビット:\n\n元の値: ${valueBin} (${value})\n結果: ${resultBin} (${result})\n\n右に${shift}ビットシフトし、左側に0を詰めます。\nほぼ ${value} ÷ 2^${shift} = ${Math.floor(value / (2 ** shift))} と同じ`
+    hint: `【計算方法】論理右シフト ${shift} ビット\n① ビット列を右に ${shift} つずらす\n② 左端に 0 を ${shift} 個入れる\n③ または 元の値 ÷ 2^${shift}（小数切捨て）`,
+    explanation: `【計算方法】論理右シフト ${shift} ビット\n\n公式: 結果 = floor(元の値 ÷ 2^シフト数)\n\n手順:\n1. 元の値: ${valueBin} (${value})\n2. 右へ ${shift} ビット移動し、左に0を詰める\n3. 計算: ${value} ÷ 2^${shift} = ${value} ÷ ${2 ** shift} = ${value / (2 ** shift)}\n4. 小数切捨て → ${result} = ${resultBin}\n\n答え: ${resultBin} (${result})`
   };
 }
 
@@ -412,8 +412,8 @@ function generatePermutation() {
     question: `${n}個の異なるものから${r}個を選んで並べる順列 P(${n},${r}) の総数はいくつか。`,
     choices,
     correctAnswer,
-    hint: '順列は P(n,r) = n!/(n-r)! で計算します。',
-    explanation: `順列 P(${n},${r}) の計算:\n\nP(${n},${r}) = ${n}! / (${n}-${r})!\n= ${n}! / ${n - r}!\n= ${factorial(n)} / ${factorial(n - r)}\n= ${result}\n\n答え: ${result}`
+    hint: `【計算方法】順列 P(n,r)\n公式: P(n,r) = n! / (n-r)!\nまたは: n × (n-1) × … を r 個かける\nここでは P(${n},${r}) = ${permutationProduct(n, r)}`,
+    explanation: `【計算方法】順列 P(n,r)（並べ方の総数）\n\n公式:\n  P(n,r) = n! / (n-r)!\n  または P(n,r) = n × (n-1) × … × (n-r+1)\n\n手順:\n1. 掛け算で求める\n   P(${n},${r}) = ${permutationProduct(n, r)} = ${result}\n\n2. 階乗でも確認\n   ${n}! = ${factorialExpand(n)} = ${factorial(n)}\n   (${n}-${r})! = ${factorial(n - r)}\n   P = ${factorial(n)} ÷ ${factorial(n - r)} = ${result}\n\n答え: ${result}`
   };
 }
 
@@ -439,8 +439,8 @@ function generateCombination() {
     question: `${n}個の異なるものから${r}個を選ぶ組合せ C(${n},${r}) の総数はいくつか。`,
     choices,
     correctAnswer,
-    hint: '組合せは C(n,r) = n! / (r!(n-r)!) で計算します。順序は関係ありません。',
-    explanation: `組合せ C(${n},${r}) の計算:\n\nC(${n},${r}) = ${n}! / (${r}! × (${n}-${r})!)\n= ${factorial(n)} / (${factorial(r)} × ${factorial(n - r)})\n= ${result}\n\n答え: ${result}`
+    hint: `【計算方法】組合せ C(n,r)\n公式: C(n,r) = n! / (r! × (n-r)!)\nまたは: C = P(n,r) / r!\n順番は区別しない点に注意`,
+    explanation: `【計算方法】組合せ C(n,r)（選び方の総数・順序なし）\n\n公式: C(n,r) = n! / (r! × (n-r)!) = P(n,r) / r!\n\n手順:\n${combinationSteps(n, r)}\n\n答え: ${result}`
   };
 }
 
@@ -466,8 +466,8 @@ function generateExpectedValue() {
     question: `ある抽選で、${values[0]}円が当たる確率が${probabilities[0]}、${values[1]}円が当たる確率が${probabilities[1]}、${values[2]}円が当たる確率が${probabilities[2]}のとき、期待値はいくらか。`,
     choices,
     correctAnswer,
-    hint: '期待値 = Σ(値 × 確率) で計算します。',
-    explanation: `期待値の計算:\n\n期待値 = ${values[0]} × ${probabilities[0]} + ${values[1]} × ${probabilities[1]} + ${values[2]} × ${probabilities[2]}\n= ${values[0] * probabilities[0]} + ${values[1] * probabilities[1]} + ${values[2] * probabilities[2]}\n= ${expected}円\n\n答え: ${expected}円`
+    hint: `【計算方法】期待値\n公式: E = Σ (値 × その確率)\n各パターンごとに「金額×確率」を出して全部足す`,
+    explanation: `【計算方法】期待値（加重平均）\n\n公式: 期待値 = Σ (値ᵢ × 確率ᵢ)\n\n手順:\n1. ${values[0]} × ${probabilities[0]} = ${values[0] * probabilities[0]}\n2. ${values[1]} × ${probabilities[1]} = ${values[1] * probabilities[1]}\n3. ${values[2]} × ${probabilities[2]} = ${values[2] * probabilities[2]}\n4. 合計 = ${values[0] * probabilities[0]} + ${values[1] * probabilities[1]} + ${values[2] * probabilities[2]} = ${expected}\n\n答え: ${expected}円`
   };
 }
 
@@ -494,8 +494,8 @@ function generateAverage() {
     question: `次のデータの平均値を求めよ（小数第1位まで）。\nデータ: ${data.join(', ')}`,
     choices,
     correctAnswer,
-    hint: '平均値 = データの合計 ÷ データの個数',
-    explanation: `平均値の計算:\n\n合計 = ${data.join(' + ')} = ${sum}\n平均 = ${sum} ÷ ${count} = ${avgRounded}\n\n答え: ${avgRounded}`
+    hint: `【計算方法】平均値（相加平均）\n公式: 平均 = 合計 ÷ 個数\n① 全部足す ② データの個数で割る ③ 小数第1位まで丸める`,
+    explanation: `【計算方法】平均値\n\n公式: 平均 = (x₁ + x₂ + … + xₙ) / n\n\n手順:\n1. 合計 = ${data.join(' + ')} = ${sum}\n2. 個数 n = ${count}\n3. ${sum} ÷ ${count} = ${sum / count}\n4. 小数第1位まで → ${avgRounded}\n\n答え: ${avgRounded}`
   };
 }
 
@@ -522,8 +522,8 @@ function generateMedian() {
     question: `次のデータの中央値（メジアン）を求めよ。\nデータ: ${data.join(', ')}`,
     choices,
     correctAnswer,
-    hint: 'データを小さい順に並べて真ん中の値を取ります。',
-    explanation: `中央値の計算:\n\nソート済みデータ: ${data.join(', ')}\nデータ数: ${count}個\n中央値: ${median}（真ん中の値）\n\n答え: ${median}`
+    hint: `【計算方法】中央値（メジアン）\n① 小さい順に並べる\n② 個数が奇数なので真ん中（${Math.floor(count / 2) + 1}番目）の値を取る`,
+    explanation: `【計算方法】中央値（メジアン）\n\n手順:\n1. 昇順に並べる: ${data.join(', ')}\n2. データ数 = ${count}（奇数）\n3. 中央の位置 = (${count}+1)/2 = ${Math.floor(count / 2) + 1} 番目\n4. ${Math.floor(count / 2) + 1} 番目の値 = ${median}\n\n※平均値（${avg}）と混同しないこと\n\n答え: ${median}`
   };
 }
 
@@ -553,8 +553,8 @@ function generateMIPS() {
     question: `クロック周波数が${clockMHz}MHz、CPI（クロック当たりの命令数）が${cpi}のプロセッサの性能は何MIPSか。`,
     choices,
     correctAnswer,
-    hint: 'MIPS = クロック周波数(MHz) / CPI',
-    explanation: `MIPS の計算:\n\nMIPS = クロック周波数 / CPI\n= ${clockMHz} / ${cpi}\n= ${mips} MIPS\n\n答え: ${mips} MIPS`
+    hint: `【計算方法】MIPS\n公式: MIPS = クロック周波数(MHz) ÷ CPI\nここでは ${clockMHz} ÷ ${cpi}`,
+    explanation: `【計算方法】MIPS（Million Instructions Per Second）\n\n公式: MIPS = クロック周波数[MHz] / CPI\n\n意味:\n・クロック周波数: 1秒あたりのクロック数（百万単位）\n・CPI: 1命令あたり平均何クロックかかるか\n\n手順:\n1. MIPS = ${clockMHz} ÷ ${cpi}\n2. = ${mips}\n\n答え: ${mips} MIPS`
   };
 }
 
@@ -580,8 +580,8 @@ function generateProcessingTime() {
     question: `性能が${mips}MIPSのプロセッサで、${instructions / 1000}K命令のプログラムを実行するのに必要な時間は何ミリ秒か。`,
     choices,
     correctAnswer,
-    hint: '実行時間(秒) = 命令数 / (MIPS × 10^6)',
-    explanation: `処理時間の計算:\n\n実行時間 = 命令数 / (MIPS × 10^6)\n= ${instructions} / (${mips} × 1,000,000)\n= ${parseFloat(timeMs) / 1000} 秒\n= ${timeMs} ミリ秒\n\n答え: ${timeMs} ms`
+    hint: `【計算方法】実行時間\n公式: 時間[秒] = 命令数 ÷ (MIPS × 10^6)\nミリ秒にするなら ×1000\n命令数 = ${instructions / 1000}K = ${instructions}`,
+    explanation: `【計算方法】プログラム実行時間\n\n公式:\n  実行時間[秒] = 命令数 / (MIPS × 10^6)\n  実行時間[ms] = 命令数 / (MIPS × 10^3)\n\n手順:\n1. 命令数 = ${instructions / 1000} × 1000 = ${instructions}\n2. 秒単位: ${instructions} / (${mips} × 1,000,000) = ${parseFloat(timeMs) / 1000} 秒\n3. ミリ秒: ${parseFloat(timeMs) / 1000} × 1000 = ${timeMs} ms\n   （または ${instructions} / (${mips} × 1000) = ${timeMs}）\n\n答え: ${timeMs} ms`
   };
 }
 
@@ -612,8 +612,8 @@ function generateSerialAvailability() {
     question: `稼働率${a1}のシステムAと稼働率${a2}のシステムBを直列に接続したとき、システム全体の稼働率は何%か。`,
     choices,
     correctAnswer,
-    hint: '直列システムの稼働率 = 各システムの稼働率の積',
-    explanation: `直列システムの稼働率:\n\n全体の稼働率 = ${a1} × ${a2}\n= ${(parseFloat(a1) * parseFloat(a2)).toFixed(4)}\n= ${result}%\n\n答え: ${result}%`
+    hint: `【計算方法】直列接続の稼働率\n公式: 全体 = A × B\nどちらも動いていないと全体が止まるので「掛け算」\n${a1} × ${a2}`,
+    explanation: `【計算方法】直列システムの稼働率\n\n公式: 稼働率 = 装置Aの稼働率 × 装置Bの稼働率\n\n理由: 直列では1台でも止まると全体停止 → 両方が稼働している確率の積\n\n手順:\n1. ${a1} × ${a2} = ${(parseFloat(a1) * parseFloat(a2)).toFixed(4)}\n2. 百分率にする: ${(parseFloat(a1) * parseFloat(a2)).toFixed(4)} × 100 = ${result}%\n\n※並列の公式「1-(1-A)(1-B)」と混同しないこと\n\n答え: ${result}%`
   };
 }
 
@@ -640,8 +640,8 @@ function generateParallelAvailability() {
     question: `稼働率${a1}のシステムAと稼働率${a2}のシステムBを並列（冗長化）に接続したとき、システム全体の稼働率は何%か。`,
     choices,
     correctAnswer,
-    hint: '並列システムの稼働率 = 1 - (1-A)×(1-B)',
-    explanation: `並列システムの稼働率:\n\n全体の稼働率 = 1 - (1-${a1}) × (1-${a2})\n= 1 - ${(1 - parseFloat(a1)).toFixed(2)} × ${(1 - parseFloat(a2)).toFixed(2)}\n= 1 - ${((1 - parseFloat(a1)) * (1 - parseFloat(a2))).toFixed(4)}\n= ${(parseFloat(result) / 100).toFixed(4)}\n= ${result}%\n\n答え: ${result}%`
+    hint: `【計算方法】並列（冗長）の稼働率\n公式: 全体 = 1 - (1-A)×(1-B)\n「両方とも故障」の余事象\n1 - (1-${a1})×(1-${a2})`,
+    explanation: `【計算方法】並列システムの稼働率\n\n公式: 稼働率 = 1 - (1-A) × (1-B)\n\n理由: 両方とも故障したときだけ全体停止\n　　　 → 全体稼働 = 1 − 両方故障の確率\n\n手順:\n1. Aが止まる確率 = 1 - ${a1} = ${(1 - parseFloat(a1)).toFixed(2)}\n2. Bが止まる確率 = 1 - ${a2} = ${(1 - parseFloat(a2)).toFixed(2)}\n3. 両方止まる = ${(1 - parseFloat(a1)).toFixed(2)} × ${(1 - parseFloat(a2)).toFixed(2)} = ${((1 - parseFloat(a1)) * (1 - parseFloat(a2))).toFixed(4)}\n4. 全体稼働 = 1 - ${((1 - parseFloat(a1)) * (1 - parseFloat(a2))).toFixed(4)} = ${(parseFloat(result) / 100).toFixed(4)}\n5. 百分率 = ${result}%\n\n※直列の「A×B」と混同しないこと\n\n答え: ${result}%`
   };
 }
 
@@ -658,30 +658,73 @@ function combination(n, r) {
   return factorial(n) / (factorial(r) * factorial(n - r));
 }
 
+function factorialExpand(n) {
+  if (n <= 1) return '1';
+  return Array.from({ length: n }, (_, i) => n - i).join(' × ');
+}
+
+/** 10進→n進の割り算手順（余りを下から読む） */
 function generateDivisionSteps(num, base) {
-  let steps = [];
+  const steps = [];
+  const remainders = [];
   let n = num;
   while (n > 0) {
-    steps.push(`${n} ÷ ${base} = ${Math.floor(n / base)} ... ${n % base}`);
-    n = Math.floor(n / base);
+    const q = Math.floor(n / base);
+    const r = n % base;
+    steps.push(`${n} ÷ ${base} = ${q} 余り ${r}`);
+    remainders.push(r);
+    n = q;
   }
-  return steps.join('\n');
+  const result = remainders.reverse().join('');
+  return `${steps.join('\n')}\n\n余りを下から順に並べる → ${result}`;
 }
 
+/** 2進→10進の位取り展開 */
 function generateBinaryToDecimalSteps(binary) {
-  const bits = binary.split('').reverse();
-  const steps = bits.map((bit, i) => `${bit} × 2^${i} = ${bit * Math.pow(2, i)}`);
-  return steps.reverse().join('\n') + '\n合計: ' + parseInt(binary, 2);
+  const bits = binary.split('');
+  const len = bits.length;
+  const steps = bits.map((bit, i) => {
+    const power = len - 1 - i;
+    return `  第${power}位: ${bit} × 2^${power} = ${Number(bit) * Math.pow(2, power)}`;
+  });
+  return `位取り記数法で展開:\n${steps.join('\n')}\n合計 = ${parseInt(binary, 2)}`;
 }
 
+/** 16進→10進の位取り展開 */
 function generateHexToDecimalSteps(hex) {
-  const digits = hex.split('').reverse();
   const values = { A: 10, B: 11, C: 12, D: 13, E: 14, F: 15 };
+  const digits = hex.split('');
+  const len = digits.length;
   const steps = digits.map((digit, i) => {
-    const val = values[digit] || parseInt(digit);
-    return `${digit} × 16^${i} = ${val * Math.pow(16, i)}`;
+    const power = len - 1 - i;
+    const val = values[digit] !== undefined ? values[digit] : parseInt(digit, 10);
+    return `  第${power}位: ${digit}(= ${val}) × 16^${power} = ${val * Math.pow(16, power)}`;
   });
-  return steps.reverse().join('\n') + '\n合計: ' + parseInt(hex, 16);
+  return `位取り記数法で展開:\n${steps.join('\n')}\n合計 = ${parseInt(hex, 16)}`;
+}
+
+/** ビット演算の桁ごとの表 */
+function generateBitwiseSteps(aBin, bBin, resultBin, opLabel, rule) {
+  const rows = ['桁:     ' + [...Array(aBin.length).keys()].map((i) => aBin.length - 1 - i).join(' ')];
+  rows.push(`A:      ${aBin.split('').join(' ')}`);
+  rows.push(`B:      ${bBin.split('').join(' ')}`);
+  rows.push(`結果:   ${resultBin.split('').join(' ')}`);
+  return `【計算方法】各ビットを右端から1桁ずつ比較（${rule}）\n\n${rows.join('\n')}\n\n判定ルール: ${opLabel}`;
+}
+
+/** 順列の掛け算展開 P(n,r)=n×(n-1)×... */
+function permutationProduct(n, r) {
+  const terms = Array.from({ length: r }, (_, i) => n - i);
+  return terms.join(' × ');
+}
+
+/** 組合せの計算過程 */
+function combinationSteps(n, r) {
+  const num = permutationProduct(n, r);
+  const den = Array.from({ length: r }, (_, i) => r - i).join(' × ');
+  const p = factorial(n) / factorial(n - r);
+  const result = combination(n, r);
+  return `方法1: C(n,r) = P(n,r) / r!\n  P(${n},${r}) = ${num} = ${p}\n  r! = ${den} = ${factorial(r)}\n  C = ${p} ÷ ${factorial(r)} = ${result}\n\n方法2: C(n,r) = n! / (r! × (n-r)!)\n  = ${factorial(n)} / (${factorial(r)} × ${factorial(n - r)}) = ${result}`;
 }
 
 // ============================================

@@ -9,6 +9,8 @@ import {
   buildPriorityMixQuiz,
   getTopicStats,
 } from './utils/topicFilter';
+import { generateCalculationProblems } from './utils/calculationGenerator';
+import { generateSubjectBProblems } from './utils/subjectBGenerator';
 
 // 問題データをインポート
 import technologyQuestions from './questions/technology.json';
@@ -86,15 +88,33 @@ function App() {
     setMemoMode(memoKind);
   };
 
-  // 旧API互換（ランダム全問・復習）
-  const startQuiz = (category, random = false, wrongOnly = false) => {
+  // ランダム / カテゴリー / 計算 / 科目B / 復習
+  const startQuiz = (category, random = false, wrongOnly = false, calculation = false, subjectB = false) => {
     setIsRandomMode(random);
     setIsWrongOnlyMode(wrongOnly);
+
+    if (subjectB) {
+      beginQuiz(generateSubjectBProblems(20), {
+        memo: true,
+        memoKind: 'algorithm',
+        label: '科目B',
+      });
+      return;
+    }
+    if (calculation) {
+      beginQuiz(generateCalculationProblems(100), {
+        memo: true,
+        memoKind: 'calculation',
+        label: '計算問題',
+      });
+      return;
+    }
     if (wrongOnly) {
       beginQuiz(wrongQuestions, { label: 'wrong' });
       return;
     }
-    let questions = category === 'all'
+
+    const questions = category === 'all'
       ? allQuestions
       : allQuestions.filter((q) => q.category === category);
     beginQuiz(questions, { random, label: category });
@@ -164,6 +184,12 @@ function App() {
   };
 
   const topicStats = getTopicStats(allQuestions);
+  const categoryStats = {
+    all: allQuestions.length,
+    テクノロジー: allQuestions.filter((q) => q.category === 'テクノロジー').length,
+    マネジメント: allQuestions.filter((q) => q.category === 'マネジメント').length,
+    ストラテジー: allQuestions.filter((q) => q.category === 'ストラテジー').length,
+  };
 
   return (
     <div className="App">
@@ -177,6 +203,7 @@ function App() {
             onStartQuiz={startQuiz}
             onStartTopic={startTopic}
             onStartPriorityMix={startPriorityMix}
+            categoryStats={categoryStats}
             topicStats={topicStats}
             wrongQuestionsCount={wrongQuestions.length}
           />

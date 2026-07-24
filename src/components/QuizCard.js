@@ -159,7 +159,11 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
             {showHint && (
               <div className="hint-content">
                 <div className="hint-icon">💡</div>
-                <p>{question.hint}</p>
+                <div className="hint-text">
+                  {question.hint.split('\n').map((line, index) => (
+                    <p key={index}>{line || '\u00A0'}</p>
+                  ))}
+                </div>
               </div>
             )}
           </div>
