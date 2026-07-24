@@ -4,7 +4,11 @@ import QuizCard from './components/QuizCard';
 import CalculationQuizCard from './components/CalculationQuizCard';
 import CategorySelect from './components/CategorySelect';
 import Result from './components/Result';
-import { generateCalculationProblems } from './utils/calculationGenerator';
+import {
+  buildTopicQuiz,
+  buildPriorityMixQuiz,
+  getTopicStats,
+} from './utils/topicFilter';
 
 // 問題データをインポート
 import technologyQuestions from './questions/technology.json';
@@ -38,9 +42,9 @@ function App() {
   const [isRandomMode, setIsRandomMode] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [isWrongOnlyMode, setIsWrongOnlyMode] = useState(false);
-  const [isCalculationMode, setIsCalculationMode] = useState(false);
+  const [useMemoCard, setUseMemoCard] = useState(false);
+  const [memoMode, setMemoMode] = useState('calculation'); // calculation | algorithm
 
-  // 問題データを読み込み
   useEffect(() => {
     const questions = [
       ...technologyQuestions,
@@ -57,82 +61,82 @@ function App() {
       ...strategyQuestions2,
       ...strategyQuestions3,
       ...strategyQuestions4,
-      ...strategyQuestions5
+      ...strategyQuestions5,
     ];
     setAllQuestions(questions);
   }, []);
 
-  // カテゴリーごとの問題数を計算
-  const getCategoryStats = () => {
-    const stats = {
-      all: allQuestions.length,
-      テクノロジー: allQuestions.filter(q => q.category === 'テクノロジー').length,
-      マネジメント: allQuestions.filter(q => q.category === 'マネジメント').length,
-      ストラテジー: allQuestions.filter(q => q.category === 'ストラテジー').length
-    };
-    return stats;
-  };
-
-  // クイズを開始
-  const startQuiz = (category, random = false, wrongOnly = false, calculation = false) => {
-    setSelectedCategory(category);
-    setIsRandomMode(random);
-    setIsWrongOnlyMode(wrongOnly);
-    setIsCalculationMode(calculation);
-    
-    // 問題リストを準備
-    let questions = [];
-    
-    if (calculation) {
-      // 計算問題モード：100問生成
-      questions = generateCalculationProblems(100);
-    } else if (wrongOnly) {
-      questions = wrongQuestions;
-    } else if (category === 'all') {
-      questions = allQuestions;
-    } else {
-      questions = allQuestions.filter(q => q.category === category);
+  const beginQuiz = (questions, { random = false, memo = false, memoKind = 'calculation', label = 'all' } = {}) => {
+    let qs = questions;
+    if (!qs || qs.length === 0) {
+      window.alert('このトピックの問題がまだ見つかりませんでした。');
+      return;
     }
-    
-    // ランダムモードの場合、最初に1回だけシャッフル
-    if (random && questions.length > 0) {
-      questions = [...questions].sort(() => Math.random() - 0.5);
+    if (random) {
+      qs = [...qs].sort(() => Math.random() - 0.5);
     }
-    
-    setFilteredQuestions(questions);
+    setSelectedCategory(label);
+    setFilteredQuestions(qs);
     setCurrentQuestionIndex(0);
     setScore(0);
     setAnsweredQuestions([]);
     setQuizStarted(true);
     setQuizFinished(false);
+    setUseMemoCard(memo);
+    setMemoMode(memoKind);
   };
 
-  // 回答を処理
+  // 旧API互換（ランダム全問・復習）
+  const startQuiz = (category, random = false, wrongOnly = false) => {
+    setIsRandomMode(random);
+    setIsWrongOnlyMode(wrongOnly);
+    if (wrongOnly) {
+      beginQuiz(wrongQuestions, { label: 'wrong' });
+      return;
+    }
+    let questions = category === 'all'
+      ? allQuestions
+      : allQuestions.filter((q) => q.category === category);
+    beginQuiz(questions, { random, label: category });
+  };
+
+  // 優先度トピック開始
+  const startTopic = (topicId) => {
+    const { questions, topic, useMemo } = buildTopicQuiz(allQuestions, topicId);
+    const memoKind = topicId === 'calculation' ? 'calculation' : 'algorithm';
+    beginQuiz(questions, {
+      random: true,
+      memo: useMemo,
+      memoKind,
+      label: topic ? topic.name : topicId,
+    });
+  };
+
+  // 同一優先度まとめ
+  const startPriorityMix = (stars) => {
+    const perTopic = stars === 5 ? 6 : stars === 4 ? 8 : 10;
+    const { questions, useMemo } = buildPriorityMixQuiz(allQuestions, stars, perTopic);
+    beginQuiz(questions, {
+      random: true,
+      memo: useMemo,
+      memoKind: stars === 4 ? 'algorithm' : 'calculation',
+      label: `優先度${stars}`,
+    });
+  };
+
   const handleAnswer = (selectedAnswer, isCorrect) => {
     const currentQuestion = filteredQuestions[currentQuestionIndex];
-    
-    // 回答を記録
     setAnsweredQuestions([
       ...answeredQuestions,
-      {
-        question: currentQuestion,
-        selectedAnswer,
-        isCorrect
-      }
+      { question: currentQuestion, selectedAnswer, isCorrect },
     ]);
-
-    // 正解ならスコアを増やす
     if (isCorrect) {
       setScore(score + 1);
-    } else {
-      // 間違った問題を記録
-      if (!wrongQuestions.find(q => q.id === currentQuestion.id)) {
-        setWrongQuestions([...wrongQuestions, currentQuestion]);
-      }
+    } else if (!wrongQuestions.find((q) => q.id === currentQuestion.id)) {
+      setWrongQuestions([...wrongQuestions, currentQuestion]);
     }
   };
 
-  // 次の問題へ
   const nextQuestion = () => {
     if (currentQuestionIndex < filteredQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -141,19 +145,14 @@ function App() {
     }
   };
 
-  // 前の問題へ
   const prevQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
-  // クイズを途中で終了
-  const endQuiz = () => {
-    setQuizFinished(true);
-  };
+  const endQuiz = () => setQuizFinished(true);
 
-  // クイズをリセット
   const resetQuiz = () => {
     setQuizStarted(false);
     setQuizFinished(false);
@@ -161,9 +160,10 @@ function App() {
     setScore(0);
     setAnsweredQuestions([]);
     setFilteredQuestions([]);
+    setUseMemoCard(false);
   };
 
-  const categoryStats = getCategoryStats();
+  const topicStats = getTopicStats(allQuestions);
 
   return (
     <div className="App">
@@ -173,44 +173,51 @@ function App() {
 
       <main className="App-main">
         {!quizStarted ? (
-          <CategorySelect 
-            onStartQuiz={startQuiz} 
-            categoryStats={categoryStats}
+          <CategorySelect
+            onStartQuiz={startQuiz}
+            onStartTopic={startTopic}
+            onStartPriorityMix={startPriorityMix}
+            topicStats={topicStats}
             wrongQuestionsCount={wrongQuestions.length}
           />
         ) : quizFinished ? (
-          <Result 
+          <Result
             score={score}
             totalQuestions={filteredQuestions.length}
             answeredQuestions={answeredQuestions}
             onRestart={resetQuiz}
           />
+        ) : useMemoCard ? (
+          <CalculationQuizCard
+            question={filteredQuestions[currentQuestionIndex]}
+            questionNumber={currentQuestionIndex + 1}
+            totalQuestions={filteredQuestions.length}
+            onAnswer={handleAnswer}
+            onNext={nextQuestion}
+            onPrev={prevQuestion}
+            onEnd={endQuiz}
+            currentScore={score}
+            canGoBack={currentQuestionIndex > 0}
+            modeLabel={memoMode === 'calculation' ? '計算問題' : 'アルゴリズム'}
+            memoTitle={memoMode === 'calculation' ? '📝 計算メモ' : '📝 トレースメモ'}
+            memoPlaceholder={
+              memoMode === 'calculation'
+                ? '計算過程をここにメモできます...'
+                : '変数の変化や実行過程をここにメモできます...'
+            }
+          />
         ) : (
-          isCalculationMode ? (
-            <CalculationQuizCard
-              question={filteredQuestions[currentQuestionIndex]}
-              questionNumber={currentQuestionIndex + 1}
-              totalQuestions={filteredQuestions.length}
-              onAnswer={handleAnswer}
-              onNext={nextQuestion}
-              onPrev={prevQuestion}
-              onEnd={endQuiz}
-              currentScore={score}
-              canGoBack={currentQuestionIndex > 0}
-            />
-          ) : (
-            <QuizCard
-              question={filteredQuestions[currentQuestionIndex]}
-              questionNumber={currentQuestionIndex + 1}
-              totalQuestions={filteredQuestions.length}
-              onAnswer={handleAnswer}
-              onNext={nextQuestion}
-              onPrev={prevQuestion}
-              onEnd={endQuiz}
-              currentScore={score}
-              canGoBack={currentQuestionIndex > 0}
-            />
-          )
+          <QuizCard
+            question={filteredQuestions[currentQuestionIndex]}
+            questionNumber={currentQuestionIndex + 1}
+            totalQuestions={filteredQuestions.length}
+            onAnswer={handleAnswer}
+            onNext={nextQuestion}
+            onPrev={prevQuestion}
+            onEnd={endQuiz}
+            currentScore={score}
+            canGoBack={currentQuestionIndex > 0}
+          />
         )}
       </main>
 

@@ -2,7 +2,20 @@ import React, { useState, useRef, useEffect } from 'react';
 import './CalculationQuizCard.css';
 import { getOfficialName } from '../utils/officialNames';
 
-function CalculationQuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, onPrev, onEnd, currentScore, canGoBack }) {
+function CalculationQuizCard({
+  question,
+  questionNumber,
+  totalQuestions,
+  onAnswer,
+  onNext,
+  onPrev,
+  onEnd,
+  currentScore,
+  canGoBack,
+  modeLabel = '計算問題',
+  memoTitle = '📝 計算メモ',
+  memoPlaceholder = '計算過程をここにメモできます...',
+}) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showHint, setShowHint] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -112,7 +125,9 @@ function CalculationQuizCard({ question, questionNumber, totalQuestions, onAnswe
 
         <div className="header-actions">
           <div className="badges">
-            <div className="category-badge calc-badge">💯 計算問題</div>
+            <div className="category-badge calc-badge">
+              {modeLabel === '科目B' ? '🧩 科目B' : '💯 計算問題'}
+            </div>
             {question.subcategory && (
               <div className="subcategory-badge">{question.subcategory}</div>
             )}
@@ -197,7 +212,7 @@ function CalculationQuizCard({ question, questionNumber, totalQuestions, onAnswe
 
         <div className="memo-section">
           <div className="memo-header">
-            <span className="memo-title">📝 計算メモ</span>
+            <span className="memo-title">{memoTitle}</span>
             <button 
               className="memo-clear"
               onClick={() => setMemoText('')}
@@ -208,7 +223,7 @@ function CalculationQuizCard({ question, questionNumber, totalQuestions, onAnswe
           </div>
           <textarea
             className="memo-textarea"
-            placeholder="計算過程をここにメモできます...&#10;&#10;例:&#10;10進数 → 2進数&#10;255 ÷ 2 = 127 ... 1&#10;127 ÷ 2 = 63 ... 1&#10;..."
+            placeholder={memoPlaceholder}
             value={memoText}
             onChange={(e) => setMemoText(e.target.value)}
           />

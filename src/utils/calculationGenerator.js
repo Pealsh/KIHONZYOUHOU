@@ -101,21 +101,26 @@ function roundNice(n) {
 // 1. 基数変換問題
 // ============================================
 
+function fmtBinDec(n, bits = 8) {
+  const v = n & ((1 << bits) - 1);
+  return `${v.toString(2).padStart(bits, '0')} (${v})`;
+}
+
 /**
  * 10進数→2進数変換
  */
 function generate10to2() {
   const decimal = randInt(8, 255);
   const binary = decimal.toString(2);
-  
-  // 間違い選択肢を生成
-  const wrong1 = (decimal + randInt(1, 3)).toString(2);
-  const wrong2 = (decimal - randInt(1, 3)).toString(2);
-  const wrong3 = (decimal ^ randInt(1, 7)).toString(2);
-  
-  const choices = shuffle([binary, wrong1, wrong2, wrong3]);
-  const correctAnswer = choices.indexOf(binary);
-  
+  const { choices, correctAnswer } = buildUniqueChoices(binary, [
+    (decimal + 1).toString(2),
+    (decimal - 1).toString(2),
+    (decimal + 2).toString(2),
+    (decimal ^ 1).toString(2),
+    (decimal ^ 2).toString(2),
+    (decimal + 3).toString(2),
+  ]);
+
   return {
     id: `calc_10to2_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -135,14 +140,19 @@ function generate10to2() {
 function generate2to10() {
   const decimal = randInt(8, 255);
   const binary = decimal.toString(2);
-  
-  const wrong1 = decimal + randInt(1, 5);
-  const wrong2 = decimal - randInt(1, 5);
-  const wrong3 = parseInt(binary.substring(0, binary.length - 1) + (binary[binary.length - 1] === '0' ? '1' : '0'), 2);
-  
-  const choices = shuffle([String(decimal), String(wrong1), String(wrong2), String(wrong3)]);
-  const correctAnswer = choices.indexOf(String(decimal));
-  
+  const flipped = parseInt(
+    binary.substring(0, binary.length - 1) + (binary[binary.length - 1] === '0' ? '1' : '0'),
+    2
+  );
+  const { choices, correctAnswer } = buildUniqueChoices(String(decimal), [
+    String(decimal + 1),
+    String(decimal - 1),
+    String(decimal + 2),
+    String(flipped),
+    String(decimal + 4),
+    String(Math.max(1, decimal - 2)),
+  ]);
+
   return {
     id: `calc_2to10_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -162,14 +172,16 @@ function generate2to10() {
 function generate16to10() {
   const decimal = randInt(16, 255);
   const hex = decimal.toString(16).toUpperCase();
-  
-  const wrong1 = decimal + randInt(1, 5);
-  const wrong2 = decimal - randInt(1, 5);
-  const wrong3 = parseInt(hex, 10); // よくある間違い
-  
-  const choices = shuffle([String(decimal), String(wrong1), String(wrong2), String(wrong3)]);
-  const correctAnswer = choices.indexOf(String(decimal));
-  
+  const asDecimalMisread = Number.isNaN(parseInt(hex, 10)) ? decimal + 16 : parseInt(hex, 10);
+  const { choices, correctAnswer } = buildUniqueChoices(String(decimal), [
+    String(decimal + 1),
+    String(decimal - 1),
+    String(asDecimalMisread),
+    String(decimal + 16),
+    String(Math.max(1, decimal - 16)),
+    String(decimal + 2),
+  ]);
+
   return {
     id: `calc_16to10_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -189,19 +201,17 @@ function generate16to10() {
 function generateTwoComplement() {
   const positive = randInt(1, 127);
   const binary = positive.toString(2).padStart(8, '0');
-  
-  // 2の補数を計算（ビット反転 + 1）
-  const inverted = binary.split('').map(b => b === '0' ? '1' : '0').join('');
-  let complementBinary = (parseInt(inverted, 2) + 1).toString(2).padStart(8, '0');
-  
-  // 間違い選択肢
-  const wrong1 = inverted; // ビット反転のみ
-  const wrong2 = binary; // 元の数
-  const wrong3 = (parseInt(inverted, 2) - 1).toString(2).padStart(8, '0');
-  
-  const choices = shuffle([complementBinary, wrong1, wrong2, wrong3]);
-  const correctAnswer = choices.indexOf(complementBinary);
-  
+  const inverted = binary.split('').map(b => (b === '0' ? '1' : '0')).join('');
+  const complementBinary = (parseInt(inverted, 2) + 1).toString(2).padStart(8, '0');
+
+  const { choices, correctAnswer } = buildUniqueChoices(complementBinary, [
+    inverted,
+    binary,
+    (parseInt(inverted, 2) - 1).toString(2).padStart(8, '0'),
+    (parseInt(complementBinary, 2) ^ 1).toString(2).padStart(8, '0'),
+    (parseInt(complementBinary, 2) ^ 2).toString(2).padStart(8, '0'),
+  ]);
+
   return {
     id: `calc_2comp_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -219,30 +229,24 @@ function generateTwoComplement() {
 // 2. 論理演算
 // ============================================
 
-/**
- * 論理積（AND）演算
- */
 function generateLogicalAND() {
   const a = randInt(128, 255);
   const b = randInt(128, 255);
   const result = a & b;
-  
   const aBin = a.toString(2).padStart(8, '0');
   const bBin = b.toString(2).padStart(8, '0');
   const resultBin = result.toString(2).padStart(8, '0');
-  
-  const wrong1 = a | b; // OR
-  const wrong2 = a ^ b; // XOR
-  const wrong3 = result + randInt(1, 10);
-  
-  const choices = shuffle([
-    `${resultBin} (${result})`,
-    `${(wrong1).toString(2).padStart(8, '0')} (${wrong1})`,
-    `${(wrong2).toString(2).padStart(8, '0')} (${wrong2})`,
-    `${(wrong3).toString(2).padStart(8, '0')} (${wrong3})`
+  const correct = `${resultBin} (${result})`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    fmtBinDec(a | b),
+    fmtBinDec(a ^ b),
+    fmtBinDec(result + 1),
+    fmtBinDec(result + 2),
+    fmtBinDec(Math.max(0, result - 1)),
+    fmtBinDec(a),
   ]);
-  const correctAnswer = choices.indexOf(`${resultBin} (${result})`);
-  
+
   return {
     id: `calc_and_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -256,30 +260,24 @@ function generateLogicalAND() {
   };
 }
 
-/**
- * 論理和（OR）演算
- */
 function generateLogicalOR() {
   const a = randInt(64, 127);
   const b = randInt(64, 127);
   const result = a | b;
-  
   const aBin = a.toString(2).padStart(8, '0');
   const bBin = b.toString(2).padStart(8, '0');
   const resultBin = result.toString(2).padStart(8, '0');
-  
-  const wrong1 = a & b;
-  const wrong2 = a ^ b;
-  const wrong3 = result + randInt(1, 10);
-  
-  const choices = shuffle([
-    `${resultBin} (${result})`,
-    `${(wrong1).toString(2).padStart(8, '0')} (${wrong1})`,
-    `${(wrong2).toString(2).padStart(8, '0')} (${wrong2})`,
-    `${(wrong3).toString(2).padStart(8, '0')} (${wrong3})`
+  const correct = `${resultBin} (${result})`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    fmtBinDec(a & b),
+    fmtBinDec(a ^ b),
+    fmtBinDec(result + 1),
+    fmtBinDec(Math.max(0, result - 1)),
+    fmtBinDec(result + 2),
+    fmtBinDec(a),
   ]);
-  const correctAnswer = choices.indexOf(`${resultBin} (${result})`);
-  
+
   return {
     id: `calc_or_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -293,30 +291,24 @@ function generateLogicalOR() {
   };
 }
 
-/**
- * 排他的論理和（XOR）演算
- */
 function generateLogicalXOR() {
   const a = randInt(64, 200);
   const b = randInt(64, 200);
   const result = a ^ b;
-  
   const aBin = a.toString(2).padStart(8, '0');
   const bBin = b.toString(2).padStart(8, '0');
   const resultBin = result.toString(2).padStart(8, '0');
-  
-  const wrong1 = a & b;
-  const wrong2 = a | b;
-  const wrong3 = result + randInt(1, 10);
-  
-  const choices = shuffle([
-    `${resultBin} (${result})`,
-    `${(wrong1).toString(2).padStart(8, '0')} (${wrong1})`,
-    `${(wrong2).toString(2).padStart(8, '0')} (${wrong2})`,
-    `${(wrong3).toString(2).padStart(8, '0')} (${wrong3})`
+  const correct = `${resultBin} (${result})`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    fmtBinDec(a & b),
+    fmtBinDec(a | b),
+    fmtBinDec(result + 1),
+    fmtBinDec(Math.max(0, result - 1)),
+    fmtBinDec(result + 2),
+    fmtBinDec(a),
   ]);
-  const correctAnswer = choices.indexOf(`${resultBin} (${result})`);
-  
+
   return {
     id: `calc_xor_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -334,29 +326,23 @@ function generateLogicalXOR() {
 // 3. シフト演算
 // ============================================
 
-/**
- * 論理左シフト
- */
 function generateLogicalLeftShift() {
   const value = randInt(8, 63);
   const shift = randInt(1, 3);
-  const result = (value << shift) & 0xFF; // 8ビットマスク
-  
+  const result = (value << shift) & 0xFF;
   const valueBin = value.toString(2).padStart(8, '0');
   const resultBin = result.toString(2).padStart(8, '0');
-  
-  const wrong1 = value << (shift + 1);
-  const wrong2 = value >> shift;
-  const wrong3 = value * shift;
-  
-  const choices = shuffle([
-    `${resultBin} (${result})`,
-    `${(wrong1 & 0xFF).toString(2).padStart(8, '0')} (${wrong1 & 0xFF})`,
-    `${(wrong2).toString(2).padStart(8, '0')} (${wrong2})`,
-    `${(wrong3 & 0xFF).toString(2).padStart(8, '0')} (${wrong3 & 0xFF})`
+  const correct = `${resultBin} (${result})`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    fmtBinDec((value << (shift + 1)) & 0xFF),
+    fmtBinDec(value >> shift),
+    fmtBinDec((value * shift) & 0xFF),
+    fmtBinDec((result + 1) & 0xFF),
+    fmtBinDec(Math.max(0, result - 1)),
+    fmtBinDec(value),
   ]);
-  const correctAnswer = choices.indexOf(`${resultBin} (${result})`);
-  
+
   return {
     id: `calc_lshift_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -370,29 +356,23 @@ function generateLogicalLeftShift() {
   };
 }
 
-/**
- * 論理右シフト
- */
 function generateLogicalRightShift() {
   const value = randInt(64, 255);
   const shift = randInt(1, 3);
   const result = value >>> shift;
-  
   const valueBin = value.toString(2).padStart(8, '0');
   const resultBin = result.toString(2).padStart(8, '0');
-  
-  const wrong1 = value >> (shift + 1);
-  const wrong2 = value << shift;
-  const wrong3 = Math.floor(value / shift);
-  
-  const choices = shuffle([
-    `${resultBin} (${result})`,
-    `${(wrong1).toString(2).padStart(8, '0')} (${wrong1})`,
-    `${(wrong2 & 0xFF).toString(2).padStart(8, '0')} (${wrong2 & 0xFF})`,
-    `${(wrong3).toString(2).padStart(8, '0')} (${wrong3})`
+  const correct = `${resultBin} (${result})`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    fmtBinDec(value >> (shift + 1)),
+    fmtBinDec((value << shift) & 0xFF),
+    fmtBinDec(Math.floor(value / shift)),
+    fmtBinDec(result + 1),
+    fmtBinDec(Math.max(0, result - 1)),
+    fmtBinDec(value),
   ]);
-  const correctAnswer = choices.indexOf(`${resultBin} (${result})`);
-  
+
   return {
     id: `calc_rshift_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -410,22 +390,20 @@ function generateLogicalRightShift() {
 // 4. 確率・統計
 // ============================================
 
-/**
- * 順列の計算
- */
 function generatePermutation() {
   const n = randInt(5, 8);
   const r = randInt(2, Math.min(4, n - 1));
-  
   const result = factorial(n) / factorial(n - r);
-  
-  const wrong1 = factorial(n);
-  const wrong2 = combination(n, r);
-  const wrong3 = Math.pow(n, r);
-  
-  const choices = shuffle([String(result), String(wrong1), String(wrong2), String(wrong3)]);
-  const correctAnswer = choices.indexOf(String(result));
-  
+
+  const { choices, correctAnswer } = buildUniqueChoices(String(result), [
+    String(factorial(n)),
+    String(combination(n, r)),
+    String(Math.pow(n, r)),
+    String(result + n),
+    String(Math.max(1, result - n)),
+    String(n * r),
+  ]);
+
   return {
     id: `calc_perm_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -439,22 +417,20 @@ function generatePermutation() {
   };
 }
 
-/**
- * 組合せの計算
- */
 function generateCombination() {
   const n = randInt(5, 10);
   const r = randInt(2, Math.min(5, n - 1));
-  
   const result = combination(n, r);
-  
-  const wrong1 = factorial(n) / factorial(n - r);
-  const wrong2 = factorial(n);
-  const wrong3 = n * r;
-  
-  const choices = shuffle([String(result), String(wrong1), String(wrong2), String(wrong3)]);
-  const correctAnswer = choices.indexOf(String(result));
-  
+
+  const { choices, correctAnswer } = buildUniqueChoices(String(result), [
+    String(factorial(n) / factorial(n - r)),
+    String(factorial(n)),
+    String(n * r),
+    String(result + 1),
+    String(Math.max(1, result - 1)),
+    String(combination(n, Math.max(1, r - 1))),
+  ]);
+
   return {
     id: `calc_comb_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -468,27 +444,20 @@ function generateCombination() {
   };
 }
 
-/**
- * 期待値の計算
- */
 function generateExpectedValue() {
   const values = [randInt(1, 3) * 100, randInt(4, 6) * 100, randInt(7, 9) * 100];
   const probabilities = [0.2, 0.3, 0.5];
-  
   const expected = values.reduce((sum, val, i) => sum + val * probabilities[i], 0);
-  
-  const wrong1 = (values[0] + values[1] + values[2]) / 3;
-  const wrong2 = values[2];
-  const wrong3 = expected + randInt(10, 50);
-  
-  const choices = shuffle([
-    String(expected),
-    String(Math.round(wrong1)),
-    String(wrong2),
-    String(Math.round(wrong3))
+
+  const { choices, correctAnswer } = buildUniqueChoices(String(expected), [
+    String(Math.round((values[0] + values[1] + values[2]) / 3)),
+    String(values[2]),
+    String(expected + 50),
+    String(expected + 100),
+    String(Math.max(0, expected - 50)),
+    String(values[0] + values[1]),
   ]);
-  const correctAnswer = choices.indexOf(String(expected));
-  
+
   return {
     id: `calc_expect_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -502,29 +471,21 @@ function generateExpectedValue() {
   };
 }
 
-/**
- * 平均値の計算
- */
 function generateAverage() {
   const count = randInt(4, 6);
   const data = Array.from({ length: count }, () => randInt(10, 99));
-  
   const sum = data.reduce((a, b) => a + b, 0);
-  const avg = sum / count;
-  const avgRounded = Math.round(avg * 10) / 10;
-  
-  const wrong1 = Math.round((sum / (count + 1)) * 10) / 10;
-  const wrong2 = Math.round((sum / (count - 1)) * 10) / 10;
-  const wrong3 = Math.round((sum / count + randInt(1, 5)) * 10) / 10;
-  
-  const choices = shuffle([
-    String(avgRounded),
-    String(wrong1),
-    String(wrong2),
-    String(wrong3)
+  const avgRounded = Math.round((sum / count) * 10) / 10;
+
+  const { choices, correctAnswer } = buildUniqueChoices(String(avgRounded), [
+    String(Math.round((sum / (count + 1)) * 10) / 10),
+    String(Math.round((sum / (count - 1)) * 10) / 10),
+    String(Math.round((avgRounded + 1) * 10) / 10),
+    String(Math.round((avgRounded + 2) * 10) / 10),
+    String(Math.round(Math.max(0, avgRounded - 1) * 10) / 10),
+    String(Math.round(sum * 10) / 10),
   ]);
-  const correctAnswer = choices.indexOf(String(avgRounded));
-  
+
   return {
     id: `calc_avg_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -538,22 +499,21 @@ function generateAverage() {
   };
 }
 
-/**
- * 中央値の計算
- */
 function generateMedian() {
   const count = choice([5, 7]);
   const data = Array.from({ length: count }, () => randInt(10, 99)).sort((a, b) => a - b);
-  
   const median = data[Math.floor(count / 2)];
-  
-  const wrong1 = data[0];
-  const wrong2 = data[count - 1];
-  const wrong3 = Math.round(data.reduce((a, b) => a + b, 0) / count);
-  
-  const choices = shuffle([String(median), String(wrong1), String(wrong2), String(wrong3)]);
-  const correctAnswer = choices.indexOf(String(median));
-  
+  const avg = Math.round(data.reduce((a, b) => a + b, 0) / count);
+
+  const { choices, correctAnswer } = buildUniqueChoices(String(median), [
+    String(data[0]),
+    String(data[count - 1]),
+    String(avg),
+    String(median + 1),
+    String(Math.max(1, median - 1)),
+    String(data[1]),
+  ]);
+
   return {
     id: `calc_median_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -571,22 +531,20 @@ function generateMedian() {
 // 5. MIPS・性能計算
 // ============================================
 
-/**
- * MIPS計算
- */
 function generateMIPS() {
   const clockMHz = randInt(500, 3000);
   const cpi = choice([2, 3, 4, 5]);
-  
   const mips = (clockMHz / cpi).toFixed(0);
-  
-  const wrong1 = (clockMHz * cpi).toFixed(0);
-  const wrong2 = (clockMHz / (cpi + 1)).toFixed(0);
-  const wrong3 = (clockMHz / (cpi - 1)).toFixed(0);
-  
-  const choices = shuffle([mips, wrong1, wrong2, wrong3]);
-  const correctAnswer = choices.indexOf(mips);
-  
+
+  const { choices, correctAnswer } = buildUniqueChoices(mips, [
+    (clockMHz * cpi).toFixed(0),
+    (clockMHz / (cpi + 1)).toFixed(0),
+    cpi > 1 ? (clockMHz / (cpi - 1)).toFixed(0) : (clockMHz / (cpi + 2)).toFixed(0),
+    String(Number(mips) + 10),
+    String(Math.max(1, Number(mips) - 10)),
+    String(clockMHz),
+  ]);
+
   return {
     id: `calc_mips_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -600,22 +558,20 @@ function generateMIPS() {
   };
 }
 
-/**
- * 処理時間の計算
- */
 function generateProcessingTime() {
-  const instructions = randInt(100, 500) * 1000; // K命令
+  const instructions = randInt(100, 500) * 1000;
   const mips = randInt(50, 200);
-  
   const timeMs = (instructions / (mips * 1000)).toFixed(2);
-  
-  const wrong1 = (instructions / mips).toFixed(2);
-  const wrong2 = (mips / instructions * 1000).toFixed(2);
-  const wrong3 = (instructions * mips / 1000).toFixed(2);
-  
-  const choices = shuffle([timeMs, wrong1, wrong2, wrong3]);
-  const correctAnswer = choices.indexOf(timeMs);
-  
+
+  const { choices, correctAnswer } = buildUniqueChoices(timeMs, [
+    (instructions / mips).toFixed(2),
+    ((mips / instructions) * 1000).toFixed(2),
+    ((instructions * mips) / 1000).toFixed(2),
+    (Number(timeMs) + 0.5).toFixed(2),
+    Math.max(0.01, Number(timeMs) - 0.5).toFixed(2),
+    (Number(timeMs) + 1).toFixed(2),
+  ]);
+
   return {
     id: `calc_ptime_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -633,22 +589,21 @@ function generateProcessingTime() {
 // 6. 稼働率の計算
 // ============================================
 
-/**
- * 直列システムの稼働率
- */
 function generateSerialAvailability() {
   const a1 = (randInt(90, 98) / 100).toFixed(2);
   const a2 = (randInt(90, 98) / 100).toFixed(2);
-  
   const result = (parseFloat(a1) * parseFloat(a2) * 100).toFixed(1);
-  
-  const wrong1 = (parseFloat(a1) + parseFloat(a2)) * 50;
-  const wrong2 = ((1 - (1 - parseFloat(a1)) * (1 - parseFloat(a2))) * 100).toFixed(1);
-  const wrong3 = ((parseFloat(a1) + parseFloat(a2)) / 2 * 100).toFixed(1);
-  
-  const choices = shuffle([result + '%', wrong1.toFixed(1) + '%', wrong2 + '%', wrong3 + '%']);
-  const correctAnswer = choices.indexOf(result + '%');
-  
+  const correct = `${result}%`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    `${((parseFloat(a1) + parseFloat(a2)) * 50).toFixed(1)}%`,
+    `${((1 - (1 - parseFloat(a1)) * (1 - parseFloat(a2))) * 100).toFixed(1)}%`,
+    `${(((parseFloat(a1) + parseFloat(a2)) / 2) * 100).toFixed(1)}%`,
+    `${(Number(result) + 1).toFixed(1)}%`,
+    `${Math.max(0, Number(result) - 1).toFixed(1)}%`,
+    `${(Number(result) + 2.5).toFixed(1)}%`,
+  ]);
+
   return {
     id: `calc_avail_serial_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',
@@ -662,22 +617,21 @@ function generateSerialAvailability() {
   };
 }
 
-/**
- * 並列システムの稼働率
- */
 function generateParallelAvailability() {
   const a1 = (randInt(80, 95) / 100).toFixed(2);
   const a2 = (randInt(80, 95) / 100).toFixed(2);
-  
   const result = ((1 - (1 - parseFloat(a1)) * (1 - parseFloat(a2))) * 100).toFixed(1);
-  
-  const wrong1 = (parseFloat(a1) * parseFloat(a2) * 100).toFixed(1);
-  const wrong2 = ((parseFloat(a1) + parseFloat(a2)) / 2 * 100).toFixed(1);
-  const wrong3 = ((parseFloat(a1) + parseFloat(a2)) * 50).toFixed(1);
-  
-  const choices = shuffle([result + '%', wrong1 + '%', wrong2 + '%', wrong3 + '%']);
-  const correctAnswer = choices.indexOf(result + '%');
-  
+  const correct = `${result}%`;
+
+  const { choices, correctAnswer } = buildUniqueChoices(correct, [
+    `${(parseFloat(a1) * parseFloat(a2) * 100).toFixed(1)}%`,
+    `${(((parseFloat(a1) + parseFloat(a2)) / 2) * 100).toFixed(1)}%`,
+    `${((parseFloat(a1) + parseFloat(a2)) * 50).toFixed(1)}%`,
+    `${(Number(result) + 1).toFixed(1)}%`,
+    `${Math.max(0, Number(result) - 1).toFixed(1)}%`,
+    `${(Number(result) + 2.5).toFixed(1)}%`,
+  ]);
+
   return {
     id: `calc_avail_parallel_${Date.now()}_${randInt(1000, 9999)}`,
     category: 'テクノロジー',

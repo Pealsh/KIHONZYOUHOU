@@ -1,6 +1,6 @@
 .category-select {
   width: 100%;
-  max-width: 900px;
+  max-width: 980px;
 }
 
 .category-select-content {
@@ -88,6 +88,48 @@
   border-radius: 20px;
   font-size: 0.85rem;
   color: rgba(255, 200, 100, 1);
+  font-weight: 500;
+}
+
+.mode-section.subjectb-section {
+  padding: 1.5rem;
+  background: rgba(120, 220, 160, 0.05);
+  border: 2px solid rgba(120, 220, 160, 0.3);
+  border-radius: 20px;
+}
+
+.mode-section.subjectb-section h3 {
+  color: rgba(120, 220, 160, 1);
+  font-size: 1.5rem;
+}
+
+.subjectb-button {
+  background: rgba(120, 220, 160, 0.1) !important;
+  border-color: rgba(120, 220, 160, 0.4) !important;
+}
+
+.subjectb-button:hover {
+  background: rgba(120, 220, 160, 0.2) !important;
+  border-color: rgba(120, 220, 160, 0.6) !important;
+}
+
+.subjectb-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+}
+
+.topic-tag-b {
+  padding: 0.4rem 0.8rem;
+  background: rgba(120, 220, 160, 0.15);
+  border: 1px solid rgba(120, 220, 160, 0.3);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: rgba(120, 220, 160, 1);
   font-weight: 500;
 }
 
@@ -276,5 +318,174 @@
 
   .special-icon {
     font-size: 2rem;
+  }
+}
+
+/* ===== 優先度別トピック UI ===== */
+.priority-section {
+  padding: 1.5rem;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.priority-section.priority-5 {
+  background: rgba(255, 100, 100, 0.06);
+  border: 2px solid rgba(255, 120, 120, 0.35);
+}
+
+.priority-section.priority-4 {
+  background: rgba(255, 200, 100, 0.06);
+  border: 2px solid rgba(255, 200, 100, 0.35);
+}
+
+.priority-section.priority-3 {
+  background: rgba(140, 180, 255, 0.06);
+  border: 2px solid rgba(140, 180, 255, 0.3);
+}
+
+.priority-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.priority-header h3 {
+  margin: 0 0 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  color: white;
+  font-size: 1.35rem;
+}
+
+.priority-5 .priority-header h3 { color: rgba(255, 150, 150, 1); }
+.priority-4 .priority-header h3 { color: rgba(255, 200, 100, 1); }
+.priority-3 .priority-header h3 { color: rgba(160, 190, 255, 1); }
+
+.stars-badge {
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+.priority-desc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+}
+
+.mix-button {
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.mix-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.topic-button {
+  text-align: left;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.topic-button:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.topic-button.stars-5:hover {
+  border-color: rgba(255, 140, 140, 0.6);
+  box-shadow: 0 8px 20px rgba(255, 80, 80, 0.15);
+}
+
+.topic-button.stars-4:hover {
+  border-color: rgba(255, 200, 100, 0.6);
+  box-shadow: 0 8px 20px rgba(255, 180, 50, 0.12);
+}
+
+.topic-button.stars-3:hover {
+  border-color: rgba(140, 180, 255, 0.6);
+}
+
+.topic-button-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.topic-icon {
+  font-size: 1.4rem;
+}
+
+.topic-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.topic-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.topic-count {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.topic-go {
+  color: rgba(100, 200, 255, 0.9);
+  font-weight: 600;
+}
+
+.other-modes .stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .topic-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .priority-header {
+    flex-direction: column;
+  }
+
+  .mix-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .topic-grid {
+    grid-template-columns: 1fr;
   }
 }
