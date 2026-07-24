@@ -27,6 +27,76 @@ function shuffle(array) {
   return arr;
 }
 
+/**
+ * 正解と誤答候補から重複のない4択を作る
+ * @returns {{ choices: string[], correctAnswer: number }}
+ */
+function buildUniqueChoices(correct, distractors) {
+  const correctStr = String(correct);
+  const unique = [];
+
+  const add = (val) => {
+    const s = String(val);
+    if (s === '' || s === 'NaN' || s === 'undefined' || s === 'Infinity' || s === '-Infinity') return;
+    if (!unique.includes(s)) unique.push(s);
+  };
+
+  add(correctStr);
+  for (const d of distractors) {
+    add(d);
+    if (unique.length >= 4) break;
+  }
+
+  // 足りない場合は数値オフセットで埋める
+  let offset = 1;
+  const numericMatch = correctStr.match(/^(-?\d+(?:\.\d+)?)(%?)$/);
+  while (unique.length < 4 && offset < 500) {
+    if (numericMatch) {
+      const base = parseFloat(numericMatch[1]);
+      const suffix = numericMatch[2] || '';
+      add(`${roundNice(base + offset)}${suffix}`);
+      if (unique.length >= 4) break;
+      add(`${roundNice(base - offset)}${suffix}`);
+    } else if (/^[01]+$/.test(correctStr)) {
+      // 2進数: ビットをずらした候補
+      const n = parseInt(correctStr, 2);
+      add((n + offset).toString(2).padStart(correctStr.length, '0').slice(-correctStr.length));
+      if (unique.length >= 4) break;
+      add(Math.max(0, n - offset).toString(2).padStart(correctStr.length, '0').slice(-correctStr.length));
+    } else if (/^[0-9A-F]+$/.test(correctStr) && /[A-F]/.test(correctStr)) {
+      const n = parseInt(correctStr, 16);
+      add((n + offset).toString(16).toUpperCase());
+      if (unique.length >= 4) break;
+      add(Math.max(0, n - offset).toString(16).toUpperCase());
+    } else {
+      // 「10101010 (170)」形式
+      const binDec = correctStr.match(/^([01]+)\s*\((\d+)\)$/);
+      if (binDec) {
+        const n = parseInt(binDec[2], 10);
+        const len = binDec[1].length;
+        const next = n + offset;
+        add(`${(next & ((1 << len) - 1) || next).toString(2).padStart(len, '0')} (${next})`);
+        if (unique.length >= 4) break;
+        const prev = Math.max(0, n - offset);
+        add(`${prev.toString(2).padStart(len, '0')} (${prev})`);
+      } else {
+        add(`${correctStr}※${offset}`);
+      }
+    }
+    offset++;
+  }
+
+  const choices = shuffle(unique.slice(0, 4));
+  return {
+    choices,
+    correctAnswer: choices.indexOf(correctStr)
+  };
+}
+
+function roundNice(n) {
+  return Math.round(n * 1000) / 1000;
+}
+
 // ============================================
 // 1. 基数変換問題
 // ============================================
