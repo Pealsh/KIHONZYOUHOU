@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import QuizCard from './components/QuizCard';
+import CalculationQuizCard from './components/CalculationQuizCard';
 import CategorySelect from './components/CategorySelect';
 import Result from './components/Result';
+import { generateCalculationProblems } from './utils/calculationGenerator';
 
 // 問題データをインポート
 import technologyQuestions from './questions/technology.json';
@@ -36,6 +38,7 @@ function App() {
   const [isRandomMode, setIsRandomMode] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [isWrongOnlyMode, setIsWrongOnlyMode] = useState(false);
+  const [isCalculationMode, setIsCalculationMode] = useState(false);
 
   // 問題データを読み込み
   useEffect(() => {
@@ -71,14 +74,19 @@ function App() {
   };
 
   // クイズを開始
-  const startQuiz = (category, random = false, wrongOnly = false) => {
+  const startQuiz = (category, random = false, wrongOnly = false, calculation = false) => {
     setSelectedCategory(category);
     setIsRandomMode(random);
     setIsWrongOnlyMode(wrongOnly);
+    setIsCalculationMode(calculation);
     
     // 問題リストを準備
     let questions = [];
-    if (wrongOnly) {
+    
+    if (calculation) {
+      // 計算問題モード：100問生成
+      questions = generateCalculationProblems(100);
+    } else if (wrongOnly) {
       questions = wrongQuestions;
     } else if (category === 'all') {
       questions = allQuestions;
@@ -178,17 +186,31 @@ function App() {
             onRestart={resetQuiz}
           />
         ) : (
-          <QuizCard
-            question={filteredQuestions[currentQuestionIndex]}
-            questionNumber={currentQuestionIndex + 1}
-            totalQuestions={filteredQuestions.length}
-            onAnswer={handleAnswer}
-            onNext={nextQuestion}
-            onPrev={prevQuestion}
-            onEnd={endQuiz}
-            currentScore={score}
-            canGoBack={currentQuestionIndex > 0}
-          />
+          isCalculationMode ? (
+            <CalculationQuizCard
+              question={filteredQuestions[currentQuestionIndex]}
+              questionNumber={currentQuestionIndex + 1}
+              totalQuestions={filteredQuestions.length}
+              onAnswer={handleAnswer}
+              onNext={nextQuestion}
+              onPrev={prevQuestion}
+              onEnd={endQuiz}
+              currentScore={score}
+              canGoBack={currentQuestionIndex > 0}
+            />
+          ) : (
+            <QuizCard
+              question={filteredQuestions[currentQuestionIndex]}
+              questionNumber={currentQuestionIndex + 1}
+              totalQuestions={filteredQuestions.length}
+              onAnswer={handleAnswer}
+              onNext={nextQuestion}
+              onPrev={prevQuestion}
+              onEnd={endQuiz}
+              currentScore={score}
+              canGoBack={currentQuestionIndex > 0}
+            />
+          )
         )}
       </main>
 

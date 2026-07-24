@@ -240,6 +240,13 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
+.official-name {
+  color: rgba(180, 200, 220, 0.85);
+  font-size: 0.9em;
+  font-weight: 400;
+  margin-left: 0.15em;
+}
+
 .correct-icon,
 .incorrect-icon {
   font-size: 1.5rem;

@@ -32,6 +32,34 @@ function CategorySelect({ onStartQuiz, categoryStats, wrongQuestionsCount }) {
           </div>
         </div>
 
+        {/* 計算問題集 */}
+        <div className="mode-section calculation-section">
+          <h3>💯 計算問題集（毎回異なる数値）</h3>
+          <div className="special-modes">
+            <button
+              className="special-button calculation-button featured"
+              onClick={() => onStartQuiz('calculation', false, false, true)}
+            >
+              <div className="special-icon">🧮</div>
+              <div className="special-text">
+                <div className="special-name">ランダム計算問題 100問</div>
+                <div className="special-desc">基数変換・論理演算・確率統計・性能計算など - メモ機能付き</div>
+              </div>
+            </button>
+          </div>
+          <div className="calculation-topics">
+            <span className="topic-tag">基数変換</span>
+            <span className="topic-tag">補数表現</span>
+            <span className="topic-tag">論理演算</span>
+            <span className="topic-tag">シフト演算</span>
+            <span className="topic-tag">順列・組合せ</span>
+            <span className="topic-tag">期待値</span>
+            <span className="topic-tag">平均・中央値</span>
+            <span className="topic-tag">MIPS計算</span>
+            <span className="topic-tag">稼働率</span>
+          </div>
+        </div>
+
         <div className="mode-section">
           <h3>📖 カテゴリー別学習</h3>
           <div className="category-grid">
