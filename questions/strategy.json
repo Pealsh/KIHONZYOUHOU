@@ -3,7 +3,7 @@
     "id": "strat_001",
     "category": "ストラテジー",
     "subcategory": "システム戦略",
-    "question": "情報システム戦略の策定において、最初に実施すべきものはどれか。",
+    "question": "情報システム戦略の策定において，最初に実施すべきものはどれか。",
     "choices": [
       "システムの詳細設計",
       "経営戦略との整合性の確認",
@@ -18,7 +18,7 @@
     "id": "strat_002",
     "category": "ストラテジー",
     "subcategory": "システム戦略",
-    "question": "BPR（Business Process Reengineering）の説明として正しいものはどれか。",
+    "question": "BPR（Business Process Reengineering）の説明として，適切なものはどれか。",
     "choices": [
       "業務プロセスを少しずつ改善すること",
       "業務プロセスを抜本的に見直し再設計すること",
@@ -33,7 +33,7 @@
     "id": "strat_003",
     "category": "ストラテジー",
     "subcategory": "システム企画",
-    "question": "RFP（Request for Proposal）の説明として正しいものはどれか。",
+    "question": "RFP（Request for Proposal）の説明として，適切なものはどれか。",
     "choices": [
       "システム開発会社が作成する提案書",
       "発注者が作成する提案依頼書",
@@ -48,12 +48,12 @@
     "id": "strat_004",
     "category": "ストラテジー",
     "subcategory": "経営戦略",
-    "question": "SWOT分析において、「S」が表すものはどれか。",
+    "question": "SWOT分析において，「S」が表すものはどれか。",
     "choices": [
-      "強み（Strength）",
-      "戦略（Strategy）",
-      "成功（Success）",
-      "サービス（Service）"
+      "強み",
+      "戦略",
+      "成功",
+      "サービス"
     ],
     "correctAnswer": 0,
     "hint": "SWOTは、Strength、Weakness、Opportunity、Threatの頭文字です。",
@@ -93,7 +93,7 @@
     "id": "strat_007",
     "category": "ストラテジー",
     "subcategory": "マーケティング",
-    "question": "プロダクトライフサイクルの各段階で、「売上が急速に伸び、利益が最大化する」のはどの段階か。",
+    "question": "プロダクトライフサイクルの各段階で，「売上が急速に伸び，利益が最大化する」のはどの段階か。",
     "choices": [
       "導入期",
       "成長期",
@@ -108,7 +108,7 @@
     "id": "strat_008",
     "category": "ストラテジー",
     "subcategory": "財務・会計",
-    "question": "ROE（Return on Equity）の計算式として正しいものはどれか。",
+    "question": "ROE（Return on Equity）の計算式として適切なものはどれか。",
     "choices": [
       "当期純利益 ÷ 売上高",
       "当期純利益 ÷ 総資産",
@@ -123,7 +123,7 @@
     "id": "strat_009",
     "category": "ストラテジー",
     "subcategory": "財務・会計",
-    "question": "損益分岐点の説明として正しいものはどれか。",
+    "question": "損益分岐点の説明として，適切なものはどれか。",
     "choices": [
       "利益が最大になる売上高",
       "売上高と費用が等しくなる点",
@@ -138,7 +138,7 @@
     "id": "strat_010",
     "category": "ストラテジー",
     "subcategory": "法務",
-    "question": "著作権法において、プログラムの著作権が発生するタイミングはどれか。",
+    "question": "著作権法において，プログラムの著作権が発生するタイミングはどれか。",
     "choices": [
       "プログラムを作成した時点",
       "著作権登録をした時点",

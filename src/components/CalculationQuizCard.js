@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './CalculationQuizCard.css';
-import { getOfficialName } from '../utils/officialNames';
 
 function CalculationQuizCard({
   question,
@@ -143,13 +142,7 @@ function CalculationQuizCard({
           <h2 className="question-text">{question.question}</h2>
 
           <div className="choices">
-            {question.choices.map((choice, index) => {
-              const officialName =
-                answered && index !== question.correctAnswer
-                  ? getOfficialName(question, index)
-                  : null;
-
-              return (
+            {question.choices.map((choice, index) => (
               <button
                 key={index}
                 className={getChoiceClass(index)}
@@ -157,12 +150,7 @@ function CalculationQuizCard({
                 disabled={answered}
               >
                 <span className="choice-label">{String.fromCharCode(65 + index)}</span>
-                <span className="choice-text">
-                  {choice}
-                  {officialName && (
-                    <span className="official-name">（{officialName}）</span>
-                  )}
-                </span>
+                <span className="choice-text">{choice}</span>
                 {answered && index === question.correctAnswer && (
                   <span className="correct-icon">✓</span>
                 )}
@@ -170,8 +158,7 @@ function CalculationQuizCard({
                   <span className="incorrect-icon">✗</span>
                 )}
               </button>
-              );
-            })}
+            ))}
           </div>
 
           {!answered && (

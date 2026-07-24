@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './QuizCard.css';
-import { getOfficialName } from '../utils/officialNames';
 
 function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, onPrev, onEnd, currentScore, canGoBack }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -120,13 +119,7 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
         <h2 className="question-text">{question.question}</h2>
 
         <div className="choices">
-          {question.choices.map((choice, index) => {
-            const officialName =
-              answered && index !== question.correctAnswer
-                ? getOfficialName(question, index)
-                : null;
-
-            return (
+          {question.choices.map((choice, index) => (
             <button
               key={index}
               className={getChoiceClass(index)}
@@ -134,12 +127,7 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
               disabled={answered}
             >
               <span className="choice-label">{String.fromCharCode(65 + index)}</span>
-              <span className="choice-text">
-                {choice}
-                {officialName && (
-                  <span className="official-name">（{officialName}）</span>
-                )}
-              </span>
+              <span className="choice-text">{choice}</span>
               {answered && index === question.correctAnswer && (
                 <span className="correct-icon">✓</span>
               )}
@@ -147,8 +135,7 @@ function QuizCard({ question, questionNumber, totalQuestions, onAnswer, onNext, 
                 <span className="incorrect-icon">✗</span>
               )}
             </button>
-            );
-          })}
+          ))}
         </div>
 
         {!answered && (
